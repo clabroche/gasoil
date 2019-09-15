@@ -56,7 +56,7 @@ var MapboxClient = require('mapbox');
 let client
 try {
   // @ts-ignore
-  client = new MapboxClient(fs.readFileSync(path.resolve(__dirname, '..', 'mapbox.key'), 'utf-8'))
+  client = new MapboxClient(fs.readFileSync(path.resolve(__dirname, '..', 'mapbox.key'), 'utf-8').trim())
 } catch (e) {
   console.error('Please create a file mapbox.key with an apikey for mapbox into it')
   process.exit(0)
