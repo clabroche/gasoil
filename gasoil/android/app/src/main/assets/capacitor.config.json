@@ -1,0 +1,13 @@
+{
+  "appId": "com.coco.gasoil",
+  "appName": "gasoil",
+  "bundledWebRuntime": false,
+  "npmClient": "npm",
+  "webDir": "../server/public",
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 0
+    }
+  },
+  "cordova": {}
+}

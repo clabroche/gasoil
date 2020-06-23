@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "serve": "NODE_ENV=DEV PORT=5000 concurrently --kill-others \"cd gasoil && npm run serve\" \"cd server && nodemon bin/www ~/sailsense-stack.js\"",
+    "serve": "stack-monitor ./stack.js",
     "build": "cd gasoil && npm run build && cd .. && npm run cordova:build",
     "cordova:build": "cd gasoil && npm run cordova-build-only-www-android && cd src-cordova && cordova build android && cp platforms/android/app/build/outputs/apk/debug/app-debug.apk ../../server/public/app.apk",
     "postinstall": "cd gasoil && npm i",
@@ -34,5 +34,6 @@
     "xml2js": "^0.4.22"
   },
   "devDependencies": {
+    "@iryu54/stack-monitor": "^1.3.4"
   }
 }

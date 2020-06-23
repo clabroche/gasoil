@@ -192,8 +192,8 @@ export default {
       this.map.setView([ev.latlng.lat , ev.latlng.lng])
       this.selectedStation = this.stations.filter(s => s.data.$.latitude === ev.latlng.lat && s.data.$.longitude === ev.latlng.lng).pop()
       const res = await PromiseB.all([
-        axios.get(`${process.env.VUE_APP_SERVER_URL}:${process.env.VUE_APP_SERVER_PORT}/station-name/${this.selectedStation.data.$.latitude}/${this.selectedStation.data.$.longitude}`),
-        axios.get(`${process.env.VUE_APP_SERVER_URL}:${process.env.VUE_APP_SERVER_PORT}/distances/${this.selectedStation.data.$.latitude}/${this.selectedStation.data.$.longitude}/${this.currentMarkerCenter[0]}/${this.currentMarkerCenter[1]}`)
+        axios.get(`${process.env.VUE_APP_API_URL}/station-name/${this.selectedStation.data.$.latitude}/${this.selectedStation.data.$.longitude}`),
+        axios.get(`${process.env.VUE_APP_API_URL}/distances/${this.selectedStation.data.$.latitude}/${this.selectedStation.data.$.longitude}/${this.currentMarkerCenter[0]}/${this.currentMarkerCenter[1]}`)
       ]).then(res =>res)
       if(this.selectedStation) {
         this.$set(this.selectedStation.data, 'place_name',  res[0].data)
@@ -237,7 +237,7 @@ export default {
       return this.redIcon
     },
     async getGasoilAround() {
-      const {data: stations} = await axios.get(`${process.env.VUE_APP_SERVER_URL}:${process.env.VUE_APP_SERVER_PORT}/sort/${this.center[0].toFixed(6)}/${this.center[1].toFixed(6)}`)
+      const {data: stations} = await axios.get(`${process.env.VUE_APP_API_URL}/sort/${this.center[0].toFixed(6)}/${this.center[1].toFixed(6)}`)
       this.stations = stations.map(station => {
         return {
           data: station,

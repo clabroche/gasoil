@@ -21,26 +21,13 @@ router.get('/distances/:latitude/:longitude/:currentLatitude/:currentLongitude',
   res.json(duration)
 })
 
-async function getInfosForStation(station, currentPoint) {
-  
-  return PromiseB.all([
-    getStationName(station),
-    getStationDistance([+currentPoint.latitude, +currentPoint.longitude], [station.$.latitude, station.$.longitude])
-  ]).then(res => {
-    station.place_name = res[0] 
-    station.distance = res[1] 
-  })
-}
-const rp = require('request-promise')
 const JsZip = require('jszip')
 const url = 'http://donnees.roulez-eco.fr/opendata/instantane'
 const {exec} = require('child_process')
 var xmlParser = require('xml2js').parseStringPromise;
-const axios = require('axios').default
 const sortByDistance = require('sort-by-distance')
 const fs = require('fs')
 const PromiseB = require('bluebird')
-const currentLocation = {latitude: 48.692919, longitude:6.201955}
 const path = require('path')
 /**@type {PdvList[]} */
 let pdvList = []

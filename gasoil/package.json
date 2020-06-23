@@ -21,6 +21,9 @@
     "cordova-serve-osx": "cross-env CORDOVA_PLATFORM=osx vue-cli-service cordova-serve-osx"
   },
   "dependencies": {
+    "@capacitor/android": "^2.2.0",
+    "@capacitor/cli": "^2.2.0",
+    "@capacitor/core": "^2.2.0",
     "@fortawesome/fontawesome-free": "^5.10.2",
     "leaflet": "^1.5.1",
     "leaflet.awesome-markers": "^2.0.5",
