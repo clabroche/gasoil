@@ -1,39 +1,16 @@
 <template>
   <div>
-    <l-map ref="myMap" class="map" :zoom="this.zoom" @click="selectedStation = null; $forceUpdate()" @move="moveMap">
-      <l-tile-layer url="https://{s}.tile.osm.org/{z}/{x}/{y}.png" attribution='Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>'></l-tile-layer>
-      <l-marker :latLng="currentMarkerCenter" :icon="defaultIcon"></l-marker>
-      <l-marker
-        ref="marker"
-        @click="markerClick"
-        :latLng="[station.data.$.latitude,station.data.$.longitude]"
-        :icon="getIconForStation(station)"
-        v-for="(station, i) of stations"
-        :key="'station-' + i"
+    <map-cmp
+      :stations="stations"
+      @selectStation="this.selectedStation = $event"
+      @moveMap="moveMap"
+      @markerClick="markerClick"
       >
-        <l-tooltip class="popup" :options="{direction:'top', offset:[0,-50]}">
-          <div class="prices" v-if="station.data.prix">
-            <div v-for="price of stationPrices(station)" :key="'station-price' + price.$.nom">
-              <span class="label">
-                {{price.$.nom}}
-              </span>
-              {{price.$.valeur}} €
-            </div>
-          </div>
-        </l-tooltip>
-      </l-marker>
-    </l-map>
-
+    </map-cmp>
     <div class="overlay">
       <div>Type de carburant:</div>
-      <select v-model="carburant">
-        <option value="All">Tous</option>
-        <option value="Gazole">Gazole</option>
-        <option value="GPLc">GPLc</option>
-        <option value="E10">E10</option>
-        <option value="E85">E85</option>
-        <option value="SP95">SP95</option>
-        <option value="SP98">SP98</option>
+      <select :value="Stations.carburant" @input="Stations.setCarburant($event.target.value)">
+        <option :value="carburant.id" v-for="carburant of Stations.carburants" :key="carburant.id">{{carburant.label}}</option>
       </select>
     </div>
     <transition name="fade">
@@ -90,50 +67,28 @@
 </template>
 
 <script>
-import {LMap, LTileLayer, LMarker, LTooltip } from 'vue2-leaflet';
 import {debounce} from 'debounce'
-import L from 'leaflet'
 import axios from 'axios'
-import PromiseB from 'bluebird'
 import moment from 'moment'
+import MapVue from '../components/Map.vue';
+import PromiseB from 'bluebird'
+import Stations from '../services/stations'
+import position from '../services/position'
 moment.locale('fr')
 
 export default {
-  name: 'HelloWorld',
-  props: {
-    msg: String
+  name: 'Home',
+  components: {
+    mapCmp: MapVue
   },
   data() {
     return {
       debounce,
       latitude: 0,
       longitude: 0,
-      zoom: 0,
-      center: [0,0],
-      map: null,
-      currentMarkerCenter: [0,0],
       selectedStation: null,
-      stations: [],
-      defaultIcon: L.AwesomeMarkers.icon({
-        prefix: 'fa',
-        icon: 'compass',
-        markerColor: 'blue',
-      }),
-      greenIcon: L.AwesomeMarkers.icon({
-        prefix: 'fa',
-        icon: 'gas-pump',
-        markerColor: 'green',
-      }),
-      orangeIcon: L.AwesomeMarkers.icon({
-        prefix: 'fa',
-        icon: 'gas-pump',
-        markerColor: 'orange',
-      }),
-      redIcon: L.AwesomeMarkers.icon({
-        prefix: 'fa',
-        icon: 'gas-pump',
-        markerColor: 'red',
-      }),
+      stations: Stations.stations,
+      Stations,
       carburant: 'All',
       prices: []
     }
@@ -154,37 +109,22 @@ export default {
       return this.selectedStation.data.prix.filter(price => price.$.nom === this.carburant || this.carburant === 'All')
     }
   },
-  components: {
-    LMap,
-    LTooltip,
-    LTileLayer,
-    LMarker,
-  },
+  
   async mounted() {
     if(window.cordova) {
       await this.appReady()
     }
-    this.map = this.$refs.myMap.mapObject
-    this.getLocation()
-      .then(() => this.getGasoilAround())
-      .then(() => this.updatePrices())
   },
   methods: {
-    stationPrices(station) {
-      return station.data.prix.filter(price => price.$.nom === this.carburant || this.carburant === 'All')
-    },
     appReady() {
       return new Promise((resolve) => {
         document.addEventListener("deviceready", resolve, false);
       });
     },
-    moveMap: debounce(async function(e) {
-      if(!e.sourceTarget.getCenter) return
-      const newCenter = e.sourceTarget.getCenter()
-      this.center = [newCenter.lat, newCenter.lng]
-      await this.getGasoilAround()
-      await this.updatePrices()
-    }, 200),
+    async moveMap() {
+      await Stations.getGasoilAround()
+      this.stations = Stations.stations
+    },
     hasThisFuel(selectedStation) {
       return selectedStation.data.prix.reduce((res, price) => {
         if(!res && price.$.nom === this.carburant || this.carburant === 'All') res = true
@@ -192,72 +132,19 @@ export default {
       }, false)
     },
     async markerClick(ev) {
-      this.map.setView([ev.latlng.lat , ev.latlng.lng])
       this.selectedStation = this.stations.filter(s => s.data.$.latitude === ev.latlng.lat && s.data.$.longitude === ev.latlng.lng).pop()
-      const res = await PromiseB.all([
+      const [{data: placeName}, {data: distances}] = await PromiseB.all([
         axios.get(`${process.env.VUE_APP_API_URL}/station-name/${this.selectedStation.data.$.latitude}/${this.selectedStation.data.$.longitude}`),
-        axios.get(`${process.env.VUE_APP_API_URL}/distances/${this.selectedStation.data.$.latitude}/${this.selectedStation.data.$.longitude}/${this.currentMarkerCenter[0]}/${this.currentMarkerCenter[1]}`)
+        axios.get(`${process.env.VUE_APP_API_URL}/distances/${this.selectedStation.data.$.latitude}/${this.selectedStation.data.$.longitude}/${position.currentMarkerCenter[0]}/${position.currentMarkerCenter[1]}`)
       ])
       if(this.selectedStation) {
-        this.$set(this.selectedStation.data, 'place_name',  res[0].data)
-        this.$set(this.selectedStation.data, 'distances',  res[1].data)
+        this.$set(this.selectedStation.data, 'place_name',  placeName)
+        this.$set(this.selectedStation.data, 'distances',  distances)
       }
     },
     humanize(sec) {
       return moment.duration(sec, "seconds").humanize();
     },
-    updatePrices() {
-      this.prices = this.stations.map(station => {
-        const prices = station.data.prix
-        if(prices){
-          if(this.carburant !=="All") {
-            const price = prices.filter(p => p.$ && p.$.nom === this.carburant)[0] || {$:{valeur: 10000}}
-            return price.$.valeur
-          } else {
-            return prices[0].$.valeur
-          }
-        } else {
-          return 10000
-        }
-      }).sort()
-    },
-    getIconForStation(station) {
-      const prices = station.data.prix
-      let price = 10000
-      if(prices) {
-        if(this.carburant !=="All") {
-          const priceFound = prices.filter(p => p.$ && p.$.nom === this.carburant)[0] || {$:{valeur: null}}
-          price = priceFound.$.valeur
-          if(!price) return this.redIcon
-        } else {
-          price = prices[0].$.valeur
-        }
-        if(this.prices.indexOf(price) < 3) {
-          return this.greenIcon
-        }
-        return this.orangeIcon
-      }
-      return this.redIcon
-    },
-    async getGasoilAround() {
-      const {data: stations} = await axios.get(`${process.env.VUE_APP_API_URL}/sort/${this.center[0].toFixed(6)}/${this.center[1].toFixed(6)}`)
-      this.stations = stations.map(station => {
-        return {
-          data: station,
-        }
-      })
-    },
-    async getLocation() {
-      return new Promise((resolve) => {
-        navigator.geolocation.getCurrentPosition(position => {
-          this.center = [position.coords.latitude, position.coords.longitude]
-          this.zoom = 14
-          this.map.setView(this.center, this.zoom)
-          this.currentMarkerCenter = this.center
-          resolve()
-        });
-      });
-    }
   }
 }
 </script>
@@ -325,12 +212,6 @@ export default {
     width: 70px;
     display: inline-block;
   }
-}
-.map {
-  height: 100vh;
-  left: 0;
-  top: 0;
-  position: fixed;
 }
 h3 {
   margin: 40px 0 0;
