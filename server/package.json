@@ -7,6 +7,16 @@
     "serve": "nodemon ./bin/www"
   },
   "dependencies": {
-    
+    "bluebird": "^3.5.5",
+    "cookie-parser": "~1.4.4",
+    "core-js": "^2.6.5",
+    "cors": "^2.8.5",
+    "debug": "~2.6.9",
+    "express": "~4.16.1",
+    "jszip": "^3.2.2",
+    "mapbox": "^1.0.0-beta10",
+    "morgan": "~1.9.1",
+    "sort-by-distance": "^1.1.0",
+    "xml2js": "^0.4.22"
   }
 }

@@ -25,8 +25,12 @@
     "@capacitor/cli": "^2.2.0",
     "@capacitor/core": "^2.2.0",
     "@fortawesome/fontawesome-free": "^5.10.2",
+    "axios": "^0.19.0",
+    "bluebird": "^3.5.5",
+    "debounce": "^1.2.0",
     "leaflet": "^1.5.1",
     "leaflet.awesome-markers": "^2.0.5",
+    "moment": "^2.24.0",
     "vue": "^2.6.10",
     "vue-router": "^3.0.3",
     "vue2-leaflet": "^2.2.1"
