@@ -26,6 +26,9 @@ jobs:
     - name: Build dependencies
       run: cd gasoil && npm run build
 
+    - name: Install mapbox key
+      run: echo ${{secrets.MAPBOX_KEY}} > gasoil/mapbox.key
+
     - name: Sync capacitor
       run: cd gasoil && npx cap sync
 
@@ -43,6 +46,7 @@ jobs:
 
     - name: Move signed apk
       run: mv ${SIGNED_RELEASE_FILE} server/public/rhea.apk
+
 
     - name: Publish to Registry
       uses: elgohr/Publish-Docker-Github-Action@master
