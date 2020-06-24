@@ -9,7 +9,7 @@
 @import '~leaflet.awesome-markers/dist/leaflet.awesome-markers.css';
 @import './assets/Jost/jost.css';
 body {
-  font-family: 'Jost';
+  font-family: Jost, sans-serif;
   margin:0
 }
 </style>
