@@ -45,7 +45,7 @@ jobs:
         keyPassword: ${{ secrets.KEY_PASSWORD }}
 
     - name: Move signed apk
-      run: mv ${SIGNED_RELEASE_FILE} server/public/rhea.apk
+      run: mv ${SIGNED_RELEASE_FILE} server/public/gasoil.apk
 
 
     - name: Publish to Registry
