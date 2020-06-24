@@ -3,6 +3,7 @@ import axios from 'axios'
 
 export default {
   stations: [],
+  selectedStation: null,
   prices: [],
   carburant: 'All',
   carburants: [

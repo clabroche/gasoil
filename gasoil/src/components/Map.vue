@@ -1,10 +1,10 @@
 <template>
-  <l-map ref="myMap" class="map" :zoom="position.zoom" @click="selectStation(null)" @move="moveMap">
+  <l-map ref="myMap" class="map" :zoom="position.zoom" @click="Stations.selectedStation = null" @move="moveMap">
     <l-tile-layer :url="tileUrl" :attribution='attribution'></l-tile-layer>
     <l-marker :latLng="position.currentMarkerCenter" :icon="defaultIcon"></l-marker>
     <l-marker
       ref="marker"
-      v-for="(station, i) of stations"
+      v-for="(station, i) of Stations.stations"
       :latLng="[station.data.$.latitude,station.data.$.longitude]"
       :icon="getIconForStation(station)"
       :key="'station-' + i"
@@ -38,11 +38,11 @@ export default {
     LTooltip
   },
   props: {
-    stations: {default: []},
     carburant: {default: 'All'}
   },
   data() {
     return {
+      Stations,
       position,
       map: null,
       tileUrl: 'https://{s}.tile.osm.org/{z}/{x}/{y}.png',
@@ -74,10 +74,6 @@ export default {
     this.getLocation()
   },
   methods: {
-    selectStation(station) {
-      this.selectedStation = station; 
-      this.$forceUpdate()
-    },
     moveMap: debounce(async function(e) {
       if(!e.sourceTarget.getCenter) return
       const newCenter = e.sourceTarget.getCenter()

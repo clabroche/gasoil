@@ -1,14 +1,12 @@
 <template>
   <div>
     <map-cmp
-      :stations="Stations.stations"
-      @selectStation="this.selectedStation = $event"
       @moveMap="Stations.getGasoilAround()"
       @markerClick="markerClick"
       >
     </map-cmp>
     <fuel-overlay></fuel-overlay>
-    <station-overlay :station="selectedStation"></station-overlay>
+    <station-overlay :station="Stations.selectedStation"></station-overlay>
   </div>
 </template>
 
@@ -34,7 +32,6 @@ export default {
       debounce,
       latitude: 0,
       longitude: 0,
-      selectedStation: null,
       Stations,
       prices: []
     }
@@ -51,14 +48,14 @@ export default {
       });
     },
     async markerClick(ev) {
-      this.selectedStation = Stations.stations.filter(s => s.data.$.latitude === ev.latlng.lat && s.data.$.longitude === ev.latlng.lng).pop()
+      Stations.selectedStation = Stations.stations.filter(s => s.data.$.latitude === ev.latlng.lat && s.data.$.longitude === ev.latlng.lng).pop()
       const [{data: placeName}, {data: distances}] = await PromiseB.all([
-        axios.get(`${process.env.VUE_APP_API_URL}/station-name/${this.selectedStation.data.$.latitude}/${this.selectedStation.data.$.longitude}`),
-        axios.get(`${process.env.VUE_APP_API_URL}/distances/${this.selectedStation.data.$.latitude}/${this.selectedStation.data.$.longitude}/${position.currentMarkerCenter[0]}/${position.currentMarkerCenter[1]}`)
+        axios.get(`${process.env.VUE_APP_API_URL}/station-name/${Stations.selectedStation.data.$.latitude}/${Stations.selectedStation.data.$.longitude}`),
+        axios.get(`${process.env.VUE_APP_API_URL}/distances/${Stations.selectedStation.data.$.latitude}/${Stations.selectedStation.data.$.longitude}/${position.currentMarkerCenter[0]}/${position.currentMarkerCenter[1]}`)
       ])
-      if(this.selectedStation) {
-        this.$set(this.selectedStation.data, 'place_name',  placeName)
-        this.$set(this.selectedStation.data, 'distances',  distances)
+      if(Stations.selectedStation) {
+        this.$set(Stations.selectedStation.data, 'place_name',  placeName)
+        this.$set(Stations.selectedStation.data, 'distances',  distances)
       }
     },
   }
