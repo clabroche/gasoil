@@ -1,11 +1,13 @@
-console.log('ho')
 import Vue from 'vue'
 import App from './App.vue'
 import router from './router'
-Vue.config.productionTip = false
 import { Icon }  from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import "leaflet.awesome-markers";
+import moment from 'moment'
+
+moment.locale('fr')
+Vue.config.productionTip = false
 
 // this part resolve an issue where the markers would not appear
 delete Icon.Default.prototype._getIconUrl;
