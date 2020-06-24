@@ -127,7 +127,7 @@ function sortListByCoordinate(currentLocation) {
     coordSortedDistance = []
   }
   const sortedDistance = [] 
-  coordSortedDistance.map(coord => {
+  coordSortedDistance.forEach(coord => {
     sortedDistance.push(pdvList[coord.index])
   })
   return sortedDistance
