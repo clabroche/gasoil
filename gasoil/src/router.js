@@ -5,7 +5,7 @@ import HelloWorld from './components/HelloWorld.vue'
 Vue.use(Router)
 
 export default new Router({
-  mode: process.env.CORDOVA_PLATFORM ? 'hash' : 'hash',
+  mode: 'hash',
   base: process.env.BASE_URL,
   routes: [
     {
