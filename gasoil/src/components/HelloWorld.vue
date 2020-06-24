@@ -8,11 +8,12 @@
         @click="markerClick"
         :latLng="[station.data.$.latitude,station.data.$.longitude]"
         :icon="getIconForStation(station)"
-        v-for="station of stations"
+        v-for="(station, i) of stations"
+        :key="'station-' + i"
       >
         <l-tooltip class="popup" :options="{direction:'top', offset:[0,-50]}">
           <div class="prices" v-if="station.data.prix">
-            <div v-for="price of station.data.prix" v-if="price.$.nom === carburant || carburant === 'All'">
+            <div v-for="price of stationPrices(station)" :key="'station-price' + price.$.nom">
               <span class="label">
                 {{price.$.nom}}
               </span>
@@ -59,7 +60,7 @@
           <div class="icon"><i class="fas fa-money-bill" aria-hidden="true"></i></div>
           <div class="content">
             <div v-if="hasThisFuel(selectedStation)">
-              <div v-for="price of selectedStation.data.prix" v-if="price.$.nom === carburant || carburant === 'All'">
+              <div v-for="price of selectedStationPrices" :key="'selected-' + price.$.nom">
                 <span class="label">
                   {{price.$.nom}}
                 </span>
@@ -75,7 +76,7 @@
             <div class="automate" v-if="selectedStation.data.horaires[0].$['automate-24-24']">
               24h/24
             </div>
-            <div class="horaire" v-for="day of selectedStation.data.horaires[0].jour" v-if="day.horaire">
+            <div class="horaire" v-for="(day, i) of selectedStationDays" :key="day+'-'+i">
               <span class="label">
                 {{day.$.nom}}
               </span>
@@ -89,13 +90,9 @@
 </template>
 
 <script>
-import {LMap, LTileLayer, LMarker, LPopup, LTooltip, LIcon } from 'vue2-leaflet';
-import defaultMarkerIcon2x from 'leaflet/dist/images/marker-icon-2x.png'
-import defaultMarkerIcon from 'leaflet/dist/images/marker-icon.png'
-import defaultMarkerShadow from 'leaflet/dist/images/marker-shadow.png'
+import {LMap, LTileLayer, LMarker, LTooltip } from 'vue2-leaflet';
 import {debounce} from 'debounce'
 import L from 'leaflet'
-import { Icon }  from 'leaflet'
 import axios from 'axios'
 import PromiseB from 'bluebird'
 import moment from 'moment'
@@ -149,28 +146,35 @@ export default {
   computed: {
     currentDay() {
       return moment().day()
+    },
+    selectedStationDays() {
+      return this.selectedStation.data.horaires[0].jour.filter(day => day.horaire)
+    },
+    selectedStationPrices() {
+      return this.selectedStation.data.prix.filter(price => price.$.nom === this.carburant || this.carburant === 'All')
     }
   },
   components: {
     LMap,
-    LPopup,
     LTooltip,
     LTileLayer,
     LMarker,
-    LIcon
   },
   async mounted() {
-    if(!!window.cordova) {
+    if(window.cordova) {
       await this.appReady()
     }
     this.map = this.$refs.myMap.mapObject
     this.getLocation()
-      .then(_ => this.getGasoilAround())
-      .then(_ => this.updatePrices())
+      .then(() => this.getGasoilAround())
+      .then(() => this.updatePrices())
   },
   methods: {
+    stationPrices(station) {
+      return station.data.prix.filter(price => price.$.nom === this.carburant || this.carburant === 'All')
+    },
     appReady() {
-      return new Promise((resolve, reject) => {
+      return new Promise((resolve) => {
         document.addEventListener("deviceready", resolve, false);
       });
     },
@@ -245,7 +249,7 @@ export default {
       })
     },
     async getLocation() {
-      return new Promise((resolve, reject) => {
+      return new Promise((resolve) => {
         navigator.geolocation.getCurrentPosition(position => {
           this.center = [position.coords.latitude, position.coords.longitude]
           this.zoom = 14
