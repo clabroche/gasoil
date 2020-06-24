@@ -27,7 +27,7 @@ jobs:
       run: cd gasoil && npm run build
 
     - name: Install mapbox key
-      run: echo ${{secrets.MAPBOX_KEY}} > gasoil/mapbox.key
+      run: echo ${{secrets.MAPBOX_KEY}} > server/mapbox.key
 
     - name: Sync capacitor
       run: cd gasoil && npx cap sync
