@@ -7,6 +7,9 @@
     </map-cmp>
     <fuel-overlay></fuel-overlay>
     <station-overlay :station="Stations.selectedStation"></station-overlay>
+    <a class="download" href="/gasoil.apk" target="__blank" v-if="!isApp" @click="isApp = true">
+      <i class="fab fa-android" aria-hidden="true"></i>
+    </a>
   </div>
 </template>
 
@@ -33,7 +36,8 @@ export default {
       latitude: 0,
       longitude: 0,
       Stations,
-      prices: []
+      prices: [],
+      isApp: window.cordova ? true : false
     }
   },
   async mounted() {
@@ -108,5 +112,40 @@ a {
 }
 .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
   transform: translateY(70vh)
+}
+.download {
+  position: fixed;
+  bottom: 10px;
+  right: 10px;
+  display: flex;
+  height: 60px;
+  width: 60px;
+  justify-content: center;
+  align-items: center;
+  background-color: #3c3b42;
+  border-radius: 50%;
+  border: 1px solid darkgrey;
+  box-sizing: border-box;
+  box-shadow: 0px 0px 8px 0px darkgrey;
+  z-index: 0;
+  animation-name: bounce;
+  animation-duration: 900ms;
+  animation-fill-mode: both;
+  animation-iteration-count: infinite;
+  &:hover {
+    background-color: #eee;
+  }
+  i {
+    color: white;
+  }
+}
+@keyframes bounce {
+  0% {
+    box-shadow: 0px 0px 0px 0px #3d7cc6;
+  }
+  100% {
+    box-shadow: 0px 0px 0px 20px transparent;
+    transform: scale(1.1);
+  }
 }
 </style>

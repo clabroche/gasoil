@@ -83,6 +83,7 @@ export default {
 <style lang="scss" scoped>
 $maxwidth: 600px;
 .station {
+  z-index: 1;
   position: fixed;
   max-width: $maxwidth;
   right: calc(50% - #{$maxwidth / 2});
