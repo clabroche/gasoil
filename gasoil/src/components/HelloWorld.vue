@@ -1,7 +1,7 @@
 <template>
   <div>
     <l-map ref="myMap" class="map" :zoom="this.zoom" @click="selectedStation = null; $forceUpdate()" @move="moveMap">
-      <l-tile-layer url="http://{s}.tile.osm.org/{z}/{x}/{y}.png" attribution='Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>'></l-tile-layer>
+      <l-tile-layer url="https://{s}.tile.osm.org/{z}/{x}/{y}.png" attribution='Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>'></l-tile-layer>
       <l-marker :latLng="currentMarkerCenter" :icon="defaultIcon"></l-marker>
       <l-marker
         ref="marker"
