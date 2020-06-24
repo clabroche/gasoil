@@ -186,11 +186,10 @@ export default {
       await this.updatePrices()
     }, 200),
     hasThisFuel(selectedStation) {
-      const res = selectedStation.data.prix.reduce((res, price) => {
+      return selectedStation.data.prix.reduce((res, price) => {
         if(!res && price.$.nom === this.carburant || this.carburant === 'All') res = true
         return res
       }, false)
-      return res
     },
     async markerClick(ev) {
       this.map.setView([ev.latlng.lat , ev.latlng.lng])
@@ -198,7 +197,7 @@ export default {
       const res = await PromiseB.all([
         axios.get(`${process.env.VUE_APP_API_URL}/station-name/${this.selectedStation.data.$.latitude}/${this.selectedStation.data.$.longitude}`),
         axios.get(`${process.env.VUE_APP_API_URL}/distances/${this.selectedStation.data.$.latitude}/${this.selectedStation.data.$.longitude}/${this.currentMarkerCenter[0]}/${this.currentMarkerCenter[1]}`)
-      ]).then(res =>res)
+      ])
       if(this.selectedStation) {
         this.$set(this.selectedStation.data, 'place_name',  res[0].data)
         this.$set(this.selectedStation.data, 'distances',  res[1].data)
@@ -265,8 +264,6 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
-.prices,.horaires {
-}
 .overlay {
   position: fixed;
   right: 0;
