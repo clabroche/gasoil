@@ -38,25 +38,25 @@
     <transition name="fade">
       <div class="station" v-if="selectedStation" :key="selectedStation.data.$.latitude + selectedStation.data.$.longitude">
         <section class="title">
-          <div class="icon"><i class="fas fa-compass"></i></div>
+          <div class="icon"><i class="fas fa-compass" aria-hidden="true"></i></div>
           <div class="content">
             <div>{{selectedStation.data.adresse[0]}}</div>
             <div>{{selectedStation.data.ville[0]}}</div>
           </div>
         </section>
         <section class="title">
-          <div class="icon"><i class="fas fa-road"></i></div>
+          <div class="icon"><i class="fas fa-road" aria-hidden="true"></i></div>
           <div class="content" v-if="selectedStation.data.distances">
             <div>{{selectedStation.data.place_name}}</div>
             <div>{{humanize(selectedStation.data.distances.duration)}}</div>
             <div>{{(selectedStation.data.distances.distance / 1000).toFixed(3)}} km</div>
           </div>
           <div class="content" v-else>
-            <i class="fas fa-spinner"></i>
+            <i class="fas fa-spinner" aria-hidden="true"></i>
           </div>
         </section>
         <section class="prices" v-if="selectedStation.data.prix">
-          <div class="icon"><i class="fas fa-money-bill"></i></div>
+          <div class="icon"><i class="fas fa-money-bill" aria-hidden="true"></i></div>
           <div class="content">
             <div v-if="hasThisFuel(selectedStation)">
               <div v-for="price of selectedStation.data.prix" v-if="price.$.nom === carburant || carburant === 'All'">
@@ -70,7 +70,7 @@
           </div>
         </section>
         <section class="horaires" v-if="selectedStation.data.horaires">
-          <div class="icon"><i class="fas fa-clock"></i></div>
+          <div class="icon"><i class="fas fa-clock" aria-hidden="true"></i></div>
           <div class="content">
             <div class="automate" v-if="selectedStation.data.horaires[0].$['automate-24-24']">
               24h/24
