@@ -81,18 +81,28 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+$maxwidth: 600px;
 .station {
   position: fixed;
-  right: 0;
+  max-width: $maxwidth;
+  right: calc(50% - #{$maxwidth / 2});
   bottom:0;
   width: 100%;
   padding: 20px;
   box-sizing: border-box;
   background-color: #3c3b42;
   border-top: 4px solid #3d7cc6;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
   box-shadow: 0px 1px 4px 5px #4a4a4a;
   max-height: 40vh;
   overflow: auto;
+  @media (max-width: $maxwidth) { 
+    & {
+      right: 0; 
+      width: 100%;
+    }
+  } 
   section {
     margin-bottom: 20px;
     background-color: #53545f;
